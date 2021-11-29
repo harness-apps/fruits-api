@@ -1,0 +1,86 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: fruits-api-deploy
+spec:
+  params:
+    - name: contextDir
+      description: the context directory from where to build the application
+      default: .
+    - name: git-url
+      description: the git repository source url
+      default: 'https://gitea-192.168.64.81.nip.io/gitea/fruits-api'
+    - name: git-revision
+      description: the git revision to use
+      default: main
+    - name: image-name
+      description: the built container image name
+      default: example.com/kameshsampath/fruits-api
+    - name: path-to-image-context
+      description: the context directory from where to build the application
+      default: .
+    - name: path-to-dockerfile
+      description: the built container image name
+      default: src/main/docker/Dockerfile.jvm
+  workspaces:
+    - name: git-source
+    - name: maven-settings
+  tasks:
+    - name: fetch-repo
+      taskRef:
+        name: git-clone
+        params:
+          - name: url
+            value: $(params.git-url)
+          - name: revision
+            value: $(params.git-revision)
+        workspaces:
+          - name: output
+            workspace: git-source
+      resources:
+        inputs:
+          - name: source
+            resource: appSource
+        outputs:
+          - name: builtImage
+            resource: appImage    
+    - name: build-app
+      taskRef:
+        name: maven
+      runAfter:
+        - fetch-repo
+      workspaces:
+        - name: source
+          workspace: git-source
+        - name: maven-settings
+          workspace: maven-settings
+    - name: build-image
+      taskRef:
+        name: kaniko
+      runAfter:
+        - build-app
+      params:
+        - name: IMAGE
+          value: $(params.image-name)
+        - name: CONTEXT
+          value: $(params.path-to-image-context)
+        - name: DOCKERFILE
+          value: $(params.path-to-dockerfile)
+      workspaces:
+        - name: source
+          workspace: git-source
+    - name: oc-deploy
+      runAfter:
+        - fetch-repo
+      taskRef:
+        name: openshift-client
+      workspaces:
+        - name: manifest-dir
+          workspace: shared-workspace
+      params:
+        - name: SCRIPT
+          value: |
+            oc apply -k config/app/
+            oc wait --for=condition=available --timeout=600s deployment/fruits-api
+            echo "-----------Displaying all the pods-----------"
+            oc get pods
