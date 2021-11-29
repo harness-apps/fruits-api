@@ -93,7 +93,7 @@ spec:
           workspace: git-source
     - name: oc-deploy
       runAfter:
-        - build-app
+        - build-image
       taskRef:
         name: openshift-client
       workspaces:

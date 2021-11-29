@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: fruits-api
-          image: example.com/kameshs/fruits-api
+          image: example.com/kameshsampath/fruits-api
           resources:
             limits:
               memory: "750Mi"
