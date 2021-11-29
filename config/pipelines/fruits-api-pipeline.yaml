@@ -22,6 +22,9 @@ spec:
     - name: path-to-dockerfile
       description: the built container image name
       default: src/main/docker/Dockerfile.jvm
+    - name: git-ssl-verify
+      description: to verify ssl ceritificates, for local gitea repos set to false 
+      default: "false"
   workspaces:
     - name: git-source
     - name: maven-settings
@@ -34,16 +37,11 @@ spec:
           value: $(params.git-url)
         - name: revision
           value: $(params.git-revision)
+        - name: sslVerify
+          value: $(params.git-ssl-verify)
       workspaces:
         - name: output
           workspace: git-source
-      resources:
-        inputs:
-          - name: source
-            resource: appSource
-        outputs:
-          - name: builtImage
-            resource: appImage    
     - name: build-app
       taskRef:
         name: maven
@@ -71,12 +69,12 @@ spec:
           workspace: git-source
     - name: oc-deploy
       runAfter:
-        - fetch-repo
+        - build-app
       taskRef:
         name: openshift-client
       workspaces:
         - name: manifest-dir
-          workspace: shared-workspace
+          workspace: git-source
       params:
         - name: SCRIPT
           value: |

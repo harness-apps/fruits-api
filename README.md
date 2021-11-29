@@ -28,6 +28,10 @@ tkn hub install task git-clone \
 tkn hub install task kaniko \
   --version=0.5 \
   --context="$CLUSTER1"
+  
+tkn hub install task openshift-client \
+   --version=0.2 \
+  --context="$CLUSTER1" 
 ```
 
 Deploy nexus to use for building java applications,
@@ -42,4 +46,16 @@ Create Tekton pipelines,
 
 ```bash
 kubectl apply --context $CLUSTER1 --kustomize config/pipelines
+```
+
+Build and Deploy the fruits-api image,
+
+```
+tkn pipeline start fruits-api-deploy \
+  --namespace=default \
+  --serviceaccount=openshift-client-sa \
+  --workspace name=maven-settings,config=maven-settings \
+  --workspace name=git-source,claimName=fruits-api-git-source \
+  --use-param-defaults \
+  --showlog
 ```

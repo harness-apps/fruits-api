@@ -5,6 +5,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: openshift-client-sa
+    namespace: default
 roleRef:
   kind: ClusterRole
   name: openshift-client-role

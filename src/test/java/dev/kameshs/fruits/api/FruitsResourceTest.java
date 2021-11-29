@@ -10,12 +10,12 @@ import static org.hamcrest.CoreMatchers.is;
 public class FruitsResourceTest {
 
     @Test
-    public void testHelloEndpoint() {
+    public void testDefaultFruit() {
         given()
-          .when().get("/api")
+          .when().get("/api/default")
           .then()
              .statusCode(200)
-             .body(is("Hello RESTEasy"));
+             .body(is("banana"));
     }
 
 }
