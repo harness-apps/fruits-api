@@ -42,11 +42,32 @@ spec:
       workspaces:
         - name: output
           workspace: git-source
-    - name: build-app
+    - name: build-and-test-app
       taskRef:
         name: maven
       runAfter:
         - fetch-repo
+      params:
+        - name: GOALS
+          value:
+            - clean
+            - test
+      workspaces:
+        - name: source
+          workspace: git-source
+        - name: maven-settings
+          workspace: maven-settings    
+    - name: build-app
+      taskRef:
+        name: maven
+      runAfter:
+        - build-and-test-app
+      params:
+        - name: GOALS
+          value:
+            - -DskipTests
+            - clean
+            - package
       workspaces:
         - name: source
           workspace: git-source
@@ -64,6 +85,9 @@ spec:
           value: $(params.path-to-image-context)
         - name: DOCKERFILE
           value: $(params.path-to-dockerfile)
+        - name: EXTRA_ARGS
+          value:
+            - "--insecure"
       workspaces:
         - name: source
           workspace: git-source
