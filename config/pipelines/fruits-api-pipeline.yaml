@@ -29,14 +29,14 @@ spec:
     - name: fetch-repo
       taskRef:
         name: git-clone
-        params:
-          - name: url
-            value: $(params.git-url)
-          - name: revision
-            value: $(params.git-revision)
-        workspaces:
-          - name: output
-            workspace: git-source
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+      workspaces:
+        - name: output
+          workspace: git-source
       resources:
         inputs:
           - name: source

@@ -11,7 +11,7 @@ configMapGenerator:
 resources:
   - sa.yaml
   - git-source-pvc.yaml
-  - clusterrole.yaml
-  - clusterrole-binding.yaml
+  - cluster-role.yaml
+  - cluster-role-binding.yaml
   - fruits-api-pipeline.yaml
   
