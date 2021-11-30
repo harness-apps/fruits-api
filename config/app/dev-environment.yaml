@@ -10,7 +10,7 @@ spec:
     description: This environment is meant for developers to deploy and test their APIs.
     displayName: Development
   # a global basepath for our APIs
-  basePath: /ecommerce 
+  basePath: /fruits 
   # we will select our APIProduct using a selector and the 2 version of it
   apiProducts:
     - namespaces:
@@ -23,7 +23,6 @@ spec:
       versions:
         names:
           - v1
-          - v2
       # this will dynamically prefix the API with the version names
       basePath: "{%version%}"
   gatewayConfig:

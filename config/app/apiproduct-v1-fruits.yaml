@@ -3,7 +3,7 @@ kind: APIProduct
 metadata:
   name: fruits-product
   labels:
-    app: fruits
+    app: fruits-api
 spec:
   displayInfo: 
     title: Fruits Product
