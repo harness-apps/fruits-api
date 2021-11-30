@@ -14,7 +14,15 @@ spec:
       labels: *labels
     spec:
       containers:
-        - name: fruits-api
+        - env:
+          - name: QUARKUS_DATASOURCE_USERNAME
+            value: postgres
+          - name: QUARKUS_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgresql
+                key: postgresql-password
+          name: fruits-api
           image: example.com/kameshsampath/fruits-api
           imagePullPolicy: Always
           resources:
