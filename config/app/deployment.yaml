@@ -16,9 +16,18 @@ spec:
       containers:
         - name: fruits-api
           image: example.com/kameshsampath/fruits-api
+          imagePullPolicy: Always
           resources:
             limits:
               memory: "750Mi"
               cpu: "500m"
           ports:
             - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: 8080
