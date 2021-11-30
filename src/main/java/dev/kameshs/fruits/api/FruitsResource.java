@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.quarkus.panache.common.Sort;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Path("/api")
@@ -24,7 +25,7 @@ public class FruitsResource {
   @Path("/default")
   public Response defaultFruit() {
     return Response
-      .ok(defaultFruit)
+      .ok(Fruit.findByName(defaultFruit))
       .build();
   }
 
@@ -32,7 +33,7 @@ public class FruitsResource {
   @Path("/fruits")
   public Response fruits() {
     return Response
-      .ok(Fruit.listAll())
+      .ok(Fruit.listAll(Sort.ascending("name,season")))
       .build();
   }
 
