@@ -5,4 +5,4 @@ metadata:
 spec:
   openApi:
     content:
-      fetchUrl: http://fruits-api.default.svc.local:8080/swagger.json
+      fetchUrl: http://fruits-api.default.svc.cluster.local:8080/swagger.json
