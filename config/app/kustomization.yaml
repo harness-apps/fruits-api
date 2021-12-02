@@ -1,7 +1,0 @@
-resources:
-  - deployment.yaml
-  - service.yaml
-  - apidoc-v1-fruits.yaml
-  - apiproduct-v1-fruits.yaml
-  - dev-environment.yaml
-  - portal.yaml
