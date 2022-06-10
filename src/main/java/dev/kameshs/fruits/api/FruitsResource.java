@@ -1,12 +1,7 @@
 package dev.kameshs.fruits.api;
 
 import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -38,7 +33,7 @@ public class FruitsResource {
   }
 
   @GET
-  @Path("/fruit/{season}")
+  @Path("/fruits/{season}")
   public Response fruitsBySeason(@PathParam("season") String season) {
     return Response
       .ok(Fruit.fruitsBySeason(season))
@@ -46,12 +41,24 @@ public class FruitsResource {
   }
 
   @POST
-  @Path("/fruit/add")
+  @Path("/fruits/add")
   @Transactional
   public Response addFruit(Fruit fruit) {
     fruit.persist();
     return Response
       .accepted()
       .build();
+  }
+
+  @DELETE
+  @Path("/fruits/{id}")
+  @Transactional
+  public Response fruitsBySeason(@PathParam("id") Long id) {
+    Fruit fruit = Fruit.findById(id);
+    if (fruit == null) {
+      throw new NotFoundException();
+    }
+    fruit.delete();
+    return Response.noContent().build();
   }
 }

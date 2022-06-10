@@ -1,8 +1,7 @@
 version: "3.7"
 services:
-  #https://github.com/kameshsampath/podman-pgsql/tree/master/pgsql12-primary-centos8
   postgresql:
-    image: postgres:13.15-alpine
+    image: postgres:14.3-alpine
     ports:
       - "5432:5432"
     environment:
