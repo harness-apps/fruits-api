@@ -2,7 +2,7 @@
 
 A simple Fruits REST API built using [Quarkus](https://quarkus.io).
 
-- For RDBMS demo use the [main](../../main) branch
+- For RDBMS demo use the [main](../../tree/main) branch
 - NoSQL(__MongoDB__) please switch to [mongodb](../../tree/mongodb) branch.
 
 ## Pre-requisites
