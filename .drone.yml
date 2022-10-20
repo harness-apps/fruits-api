@@ -26,21 +26,16 @@ steps:
     - -DskipTests
     - -q
 
-# - name: push image to registry
-#   image: thegeeklab/drone-docker-buildx
-#   privileged: true
-#   pull: if-not-exists
-#   settings:
-#     repo:
-#       from_secret: image_repo
-#     username:
-#       from_secret: image_registry_username
-#     password:
-#       from_secret: image_registry_password
-#     platforms:
-#       - linux/amd64
-#       - linux/arm64
-#     context: .
+- name: push image to registry
+  image: thegeeklab/drone-docker-buildx
+  privileged: true
+  pull: if-not-exists
+  settings:
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    context: .
+
 services:
   - name: mongodb
     image: mongo:4.2.6

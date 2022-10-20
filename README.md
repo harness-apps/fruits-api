@@ -1,52 +1,45 @@
-# Fruits App Demo
+# Fruits API
 
-A simple fruits API demo with Gloo Edge and Gitops. Check the
-repository https://github.com/kameshsampath/fruits-api-gitops on how this API is used and deployed as part of your
-GitOps workflow.
+A simple Fruits REST API built using [Quarkus](https://quarkus.io)
 
 ## Pre-requisites
 
-- Docker Desktop for Mac/Linux/Windows
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) for Mac/Linux/Windows
+- [Drone CI CLI](https://docs.drone.io/cli/install/)
+- Docker Registry e.g [Docker Hub](https://hub.docker.com) credentials
 - Java 11+
+- [MongoDB Atlas](https://www.mongodb.com/atlas) account
 
-## Start Database
+## Create Database and Collection
 
-Open a new terminal,
+Ensure you have database called `demodb` created on your __MongoDB Atlas__ account with a collection named `fruits`.
 
-```shell
-docker-compose up 
-```
+## Environment Setup
+
+Copy the `.env.example` to `.env` and update the following variables to suit your settings.
+
+- `PLUGIN_REGISTRY` - the docker registry to use
+- `PLUGIN_TAG`      - the tag to push the image to docker registry
+- `PLUGIN_REPO`     - the docker registry repository
+- `PLUGIN_USERNAME` - the docker Registry username
+- `PLUGIN_PASSWORD` - the docker registry password
 
 ## Build the Application
 
-### Hotspot
-
 ```shell
-./mvnw clean package
+drone exec --trusted --env-file=.env --secret-file=.secrets
 ```
 
-### Native
+The command will test, build and push the container image to the `$PLUGIN_REPO:$PLUGIN_TAG`.
+
+## Run Application
 
 ```shell
-./mvnw -Pnative clean package
+docker run -p 8080:8080 \
+  --env "QUARKUS_MONGODB_CONNECTION_STRING=<your Atlas Connection URL>" \
+  "$PLUGIN_REPO:$PLUGIN_TAG"
 ```
 
-## Run the application
+## Trying API
 
-## Hotspot
-
-```shell
-java -jar ./target/quarkus-app/quarkus-run.jar
-```
-
-## Native
-
-```shell
-./target/fruits-api-runner
-```
-
-## Powered-by
-
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
-
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+The application provides a Swagger UI that is accessible at <http://localhost:8080/q/swagger-ui/>, where you can try all the available API methods.
