@@ -1,6 +1,9 @@
 # Fruits API
 
-A simple Fruits REST API built using [Quarkus](https://quarkus.io). For RDBMS demo use the `main` branch. If you want to use NoSQL like __MongoDB__ please switch to `mongodb` branch.
+A simple Fruits REST API built using [Quarkus](https://quarkus.io). 
+
+- For RDBMS demo use the [main](https://github.com/kameshsampath/fruits-api/tree/main) branch
+- NoSQL(__MongoDB__) please switch to [mongodb](https://github.com/kameshsampath/fruits-api/tree/mongodb) branch.
 
 ## Pre-requisites
 
@@ -11,39 +14,26 @@ A simple Fruits REST API built using [Quarkus](https://quarkus.io). For RDBMS de
 
 ## Environment Setup
 
-The build uses following environment variables,
+Copy the `.env.example` to `.env` and update the following variables to suit your settings.
 
-- `QUARKUS_MONGODB_CONNECTION_STRING` - the connection string to MongoDB Atlas
-- `PLUGIN_TAG` - the tag to push the image to Docker Registry
-- `PLUGIN_REPO` - the docker registry repository
-
-Copy the `.envrc.example` to `.envrc.local` and update the variables to suit your settings.
-
-Copy the `secrets.example` to `secrets` and update the values,
-
-- `image_registry_username` to your Docker Registry username
-- `image_registry_password` to your Docker Registry user password
+- `PLUGIN_REGISTRY` - the docker registry to use
+- `PLUGIN_TAG`      - the tag to push the image to docker registry
+- `PLUGIN_REPO`     - the docker registry repository
+- `PLUGIN_USERNAME` - the docker Registry username
+- `PLUGIN_PASSWORD` - the docker registry password
 
 ## Build the Application
 
 ```shell
-drone exec --trusted --env-file=.envrc.local --secret-file=secrets
+drone exec --trusted --env-file=.env
 ```
 
 The command will test, build and push the container image to the `$PLUGIN_REPO:$PLUGIN_TAG`.
 
-## Create Database
+## Run Application
 
 ```shell
 docker-compose up
 ```
 
-## Run Application
-
-```shell
-docker run -p 8080:8080 \
-  --env-file=.envrc.local \
-  "$PLUGIN_REPO:$PLUGIN_TAG"
-```
-
-The application provides a Swagger UI that is accessible at <http://localhost:8080/q/swagger-ui>
+The application provides a Swagger UI that is accessible at <http://localhost:8080/q/swagger-ui> which could be used to work with the API.
