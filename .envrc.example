@@ -1,0 +1,1 @@
+QUARKUS_MONGODB_CONNECTION_STRING=<your atlas connection string>

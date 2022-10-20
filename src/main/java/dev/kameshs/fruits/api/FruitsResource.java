@@ -1,14 +1,18 @@
 package dev.kameshs.fruits.api;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import io.quarkus.panache.common.Sort;
+
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-@Path("/api")
+@Path("/api/fruits")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FruitsResource {
@@ -18,47 +22,60 @@ public class FruitsResource {
 
   @GET
   @Path("/default")
-  public Response defaultFruit() {
-    return Response
-      .ok(Fruit.findByName(defaultFruit))
-      .build();
+  public Fruit defaultFruit() {
+    return Fruit.fruitsByName(defaultFruit);
   }
 
   @GET
-  @Path("/fruits")
-  public Response fruits() {
-    return Response
-      .ok(Fruit.listAll(Sort.ascending("name,season")))
-      .build();
+  @Path("/{id}")
+  public Fruit fruitByID(@PathParam("id") String id) {
+    Fruit fruit = Fruit.findById(new ObjectId(id));
+    if (fruit == null) {
+      throw new NotFoundException();
+    }
+    ;
+    return fruit;
   }
 
   @GET
-  @Path("/fruits/{season}")
-  public Response fruitsBySeason(@PathParam("season") String season) {
-    return Response
-      .ok(Fruit.fruitsBySeason(season))
-      .build();
+  @Path("/")
+  public List<Fruit> fruits() {
+    return Fruit.listAll(Sort.ascending("name,season"));
+  }
+
+  @GET
+  @Path("/search/{name}")
+  public Fruit searchByName(@PathParam("name") String name) {
+    return Fruit.fruitsByName(name);
+  }
+
+  @GET
+  @Path("/search/season/{season}")
+  public List<Fruit> fruitsBySeason(@PathParam("season") String season) {
+    return Fruit.fruitsBySeason(season);
   }
 
   @POST
-  @Path("/fruits/add")
-  @Transactional
+  @Path("/add")
   public Response addFruit(Fruit fruit) {
     fruit.persist();
     return Response
-      .accepted()
-      .build();
+        .status(201)
+        .build();
   }
 
   @DELETE
-  @Path("/fruits/{id}")
-  @Transactional
-  public Response fruitsBySeason(@PathParam("id") Long id) {
-    Fruit fruit = Fruit.findById(id);
+  @Path("/{id}")
+  public void deleteFruit(@PathParam("id") String id) {
+    Fruit fruit = Fruit.findById(new ObjectId(id));
     if (fruit == null) {
       throw new NotFoundException();
     }
     fruit.delete();
-    return Response.noContent().build();
+  }
+
+  @DELETE
+  public void deleteAll() {
+    Fruit.deleteAll();
   }
 }

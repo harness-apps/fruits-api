@@ -1,0 +1,34 @@
+[
+  {
+    "name": "mango",
+    "season": "spring"
+  },
+  {
+    "name": "strawberry",
+    "season": "spring"
+  },
+  {
+    "name": "orange",
+    "season": "winter"
+  },
+  {
+    "name": "lemon",
+    "season": "winter"
+  },
+  {
+    "name": "blueberry",
+    "season": "summer"
+  },
+  {
+    "name": "banana",
+    "season": "summer"
+  },
+  {
+    "name": "watermelon",
+    "season": "summer"
+  },
+  {
+    "name": "pear",
+    "season": "fall"
+  }
+]

@@ -1,0 +1,52 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: unit test
+  image: kameshsampath/drone-java-maven-plugin:v1.0.3
+  pull: if-not-exists
+  settings:
+    maven_mirror_url: http://nexus:8081/repository/maven-public/
+    goals:
+    - clean 
+    - test
+    - -q
+  environment:
+    QUARKUS_MONGODB_CONNECTION_STRING: mongodb://mongodb
+
+- name: package as jar
+  image: kameshsampath/drone-java-maven-plugin:v1.0.3
+  pull: if-not-exists
+  settings:
+    maven_mirror_url: http://nexus:8081/repository/maven-public/
+    goals:
+    - clean 
+    - install
+    - -DskipTests
+    - -q
+
+# - name: push image to registry
+#   image: thegeeklab/drone-docker-buildx
+#   privileged: true
+#   pull: if-not-exists
+#   settings:
+#     repo:
+#       from_secret: image_repo
+#     username:
+#       from_secret: image_registry_username
+#     password:
+#       from_secret: image_registry_password
+#     platforms:
+#       - linux/amd64
+#       - linux/arm64
+#     context: .
+services:
+  - name: mongodb
+    image: mongo:4.2.6
+    environment:
+      # MONGO_INITDB_ROOT_USERNAME: admin
+      # MONGO_INITDB_ROOT_PASSWORD: demo
+      MONGO_INITDB_DATABASE: demodb
+
+      
