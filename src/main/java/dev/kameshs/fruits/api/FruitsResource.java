@@ -1,5 +1,7 @@
 package dev.kameshs.fruits.api;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -8,57 +10,64 @@ import javax.ws.rs.core.Response;
 import io.quarkus.panache.common.Sort;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-@Path("/api")
+
+@Path("/api/fruits")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FruitsResource {
 
-  @ConfigProperty(name = "my.fruit", defaultValue = "apple")
+  @ConfigProperty(name = "my.fruit")
   String defaultFruit;
 
   @GET
   @Path("/default")
-  public Response defaultFruit() {
-    return Response
-      .ok(Fruit.findByName(defaultFruit))
-      .build();
+  public Fruit defaultFruit() {
+    return Fruit.findByName(defaultFruit);
   }
 
   @GET
-  @Path("/fruits")
-  public Response fruits() {
-    return Response
-      .ok(Fruit.listAll(Sort.ascending("name,season")))
-      .build();
+  @Path("/")
+  public List<Fruit> fruits() {
+    return Fruit.listAll(Sort.ascending("name,season"));
   }
 
   @GET
-  @Path("/fruits/{season}")
-  public Response fruitsBySeason(@PathParam("season") String season) {
-    return Response
-      .ok(Fruit.fruitsBySeason(season))
-      .build();
+  @Path("/season/{season}")
+  public List<Fruit> fruitsBySeason(@PathParam("season") String season) {
+    return Fruit.fruitsBySeason(season);
+  }
+
+  @GET
+  @Path("/search/{name}")
+  public Fruit fruitsByName(@PathParam("name") String name) {
+    return Fruit.findByName(name);
   }
 
   @POST
-  @Path("/fruits/add")
+  @Path("/add")
   @Transactional
   public Response addFruit(Fruit fruit) {
     fruit.persist();
     return Response
-      .accepted()
+      .status(201)
       .build();
   }
 
   @DELETE
-  @Path("/fruits/{id}")
+  @Path("/{id}")
   @Transactional
-  public Response fruitsBySeason(@PathParam("id") Long id) {
+  public void fruitsBySeason(@PathParam("id") Long id) {
     Fruit fruit = Fruit.findById(id);
     if (fruit == null) {
       throw new NotFoundException();
     }
     fruit.delete();
-    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/")
+  @Transactional
+  public void deleteAll() {
+    Fruit.deleteAll();
   }
 }

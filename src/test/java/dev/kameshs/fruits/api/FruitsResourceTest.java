@@ -1,59 +1,136 @@
 package dev.kameshs.fruits.api;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
-
-import java.util.Collection;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
+import io.restassured.response.ValidatableResponse;
+import io.vertx.core.json.JsonObject;
 
 @QuarkusTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FruitsResourceTest {
 
   @Test
-  public void testDefaultFruit() {
-    Fruit defaultFruit = given()
-      .when().get("/api/default")
-      .then()
-      .statusCode(200)
-      .contentType(ContentType.JSON)
-      .extract()
-      .jsonPath()
-      .getObject("$", Fruit.class);
-    assertThat(defaultFruit.name, equalToIgnoringCase("banana"));
+  @Order(1)
+  public void testReadiness() {
+    given()
+        .when()
+        .get("/q/health/ready")
+        .then()
+        .statusCode(200)
+        .body("status", is("UP"));
   }
 
   @Test
-  public void testGetFruits() {
-
-    Fruit apple = new Fruit();
-    apple.id = 8L;
-    apple.name = "Apple";
-    apple.season = "Fall";
-
-    Fruit mango = new Fruit();
-    mango.id = 1L;
-    mango.name = "Mango";
-    mango.season = "Spring";
-
-    Collection<Fruit> fruits = given()
-      .when()
-      .get("/api/fruits")
-      .then()
-      .contentType(ContentType.JSON)
-      .statusCode(200)
-      .extract()
-      .response()
-      .jsonPath()
-      .getList("$", Fruit.class);
-
-    assertThat(fruits, hasSize(9));
-    assertThat(fruits, hasItems(mango, apple));
+  @Order(2)
+  public void testDefaultFruit() {
+    given()
+        .when()
+        .get("/api/fruits/default")
+        .then()
+        .statusCode(200)
+        .body("name", is("banana"));
   }
 
+  @Test
+  @Order(3)
+  public void testListFruits() {
+    ValidatableResponse response = given()
+        .when()
+        .get("/api/fruits")
+        .then()
+        .contentType(ContentType.JSON)
+        .statusCode(200);
+
+    ArrayList<Map<String, ?>> jsonAsArrayList = response.extract().jsonPath().get();
+
+    assertEquals(9, jsonAsArrayList.size());
+    assertEquals("apple", jsonAsArrayList.get(0).get("name"));
+    assertEquals("fall", jsonAsArrayList.get(0).get("season"));
+  }
+
+  @Test
+  @Order(4)
+  public void testAddFruit() {
+    JsonObject fruit = new JsonObject()
+        .put("name", "banana")
+        .put("season", "all");
+    given()
+        .header("Content-type", "application/json")
+        .and()
+        .body(fruit.encode())
+        .when()
+        .post("/api/fruits/add")
+        .then()
+        .statusCode(201);
+  }
+
+  @Test
+  @Order(5)
+  public void testFruitsByName() {
+    given()
+        .when()
+        .get("/api/fruits/search/{name}", "apple")
+        .then()
+        .contentType(ContentType.JSON)
+        .body("name", is("apple"));
+  }
+
+  @Test
+  @Order(6)
+  public void testFruitsBySeason() {
+    ValidatableResponse response = given()
+        .when()
+        .get("/api/fruits/season/{season}", "winter")
+        .then()
+        .contentType(ContentType.JSON)
+        .statusCode(200);
+
+    ArrayList<Map<String, ?>> jsonAsArrayList = response.extract().jsonPath().get();
+
+    assertEquals(2, jsonAsArrayList.size());
+    assertEquals("orange", jsonAsArrayList.get(0).get("name"));
+    assertEquals("lemon", jsonAsArrayList.get(1).get("name"));
+  }
+
+  @Test
+  @Order(7)
+  public void testDeleteFruit() {
+    given()
+        .when()
+        .delete("/api/fruits/10")
+        .then()
+        .statusCode(204);
+  }
+
+  @Test
+  @Order(8)
+  public void testDeleteNonExistFruit() {
+    given()
+        .when()
+        .delete("/api/fruits/10")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  @Order(9)
+  public void testDeleteAll() {
+    given()
+        .when()
+        .delete("/api/fruits")
+        .then()
+        .statusCode(204);
+  }
 }

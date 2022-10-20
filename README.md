@@ -1,52 +1,49 @@
-# Fruits App Demo
+# Fruits API
 
-A simple fruits API demo with Gloo Edge and Gitops. Check the
-repository https://github.com/kameshsampath/fruits-api-gitops on how this API is used and deployed as part of your
-GitOps workflow.
+A simple Fruits REST API built using [Quarkus](https://quarkus.io). For RDBMS demo use the `main` branch. If you want to use NoSQL like __MongoDB__ please switch to `mongodb` branch.
 
 ## Pre-requisites
 
-- Docker Desktop for Mac/Linux/Windows
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) for Mac/Linux/Windows
+- [Drone CI CLI](https://docs.drone.io/cli/install/)
+- Docker Registry e.g [Docker Hub](https://hub.docker.com) credentials
 - Java 11+
 
-## Start Database
+## Environment Setup
 
-Open a new terminal,
+The build uses following environment variables,
 
-```shell
-docker-compose up 
-```
+- `QUARKUS_MONGODB_CONNECTION_STRING` - the connection string to MongoDB Atlas
+- `PLUGIN_TAG` - the tag to push the image to Docker Registry
+- `PLUGIN_REPO` - the docker registry repository
+
+Copy the `.envrc.example` to `.envrc.local` and update the variables to suit your settings.
+
+Copy the `secrets.example` to `secrets` and update the values,
+
+- `image_registry_username` to your Docker Registry username
+- `image_registry_password` to your Docker Registry user password
 
 ## Build the Application
 
-### Hotspot
-
 ```shell
-./mvnw clean package
+drone exec --trusted --env-file=.envrc.local --secret-file=secrets
 ```
 
-### Native
+The command will test, build and push the container image to the `$PLUGIN_REPO:$PLUGIN_TAG`.
+
+## Create Database
 
 ```shell
-./mvnw -Pnative clean package
+docker-compose up
 ```
 
-## Run the application
-
-## Hotspot
+## Run Application
 
 ```shell
-java -jar ./target/quarkus-app/quarkus-run.jar
+docker run -p 8080:8080 \
+  --env-file=.envrc.local \
+  "$PLUGIN_REPO:$PLUGIN_TAG"
 ```
 
-## Native
-
-```shell
-./target/fruits-api-runner
-```
-
-## Powered-by
-
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
-
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+The application provides a Swagger UI that is accessible at <http://localhost:8080/q/swagger-ui>

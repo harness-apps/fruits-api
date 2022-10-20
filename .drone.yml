@@ -1,0 +1,47 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: unit test
+  image: kameshsampath/drone-java-maven-plugin:v1.0.3
+  pull: if-not-exists
+  settings:
+    maven_mirror_url: http://nexus:8081/repository/maven-public/
+    goals:
+    - -B 
+    - clean 
+    - test
+    - -q
+- name: package as jar
+  image: kameshsampath/drone-java-maven-plugin:v1.0.3
+  pull: if-not-exists
+  settings:
+    maven_mirror_url: http://nexus:8081/repository/maven-public/
+    goals:
+    - -B 
+    - clean 
+    - install
+    - -DskipTests
+    - -q
+
+- name: push image to registry
+  image: thegeeklab/drone-docker-buildx
+  privileged: true
+  pull: if-not-exists
+  settings:
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    context: .
+
+services:
+  - name: postgresql
+    image: postgres:14.4-alpine
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: demo
+      POSTGRES_DB: fruitsdb
+
+
+      
