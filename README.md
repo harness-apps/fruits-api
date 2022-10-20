@@ -1,9 +1,9 @@
 # Fruits API
 
-A simple Fruits REST API built using [Quarkus](https://quarkus.io). 
+A simple Fruits REST API built using [Quarkus](https://quarkus.io).
 
-- For RDBMS demo use the [main](https://github.com/kameshsampath/fruits-api/tree/main) branch
-- NoSQL(__MongoDB__) please switch to [mongodb](https://github.com/kameshsampath/fruits-api/tree/mongodb) branch.
+- For RDBMS demo use the [main](../../main) branch
+- NoSQL(__MongoDB__) please switch to [mongodb](../../tree/mongodb) branch.
 
 ## Pre-requisites
 
