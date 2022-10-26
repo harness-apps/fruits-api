@@ -22,6 +22,8 @@ Copy the `.env.example` to `.env` and update the following variables to suit you
 - `PLUGIN_USERNAME` - the docker Registry username
 - `PLUGIN_PASSWORD` - the docker registry password
 
+Comment/Uncomment and update the database settings in `.env` based on the Database that you plan to use. Currently only Postgresql/MariaDB are supported.
+
 ## Build the Application
 
 ```shell

@@ -2,8 +2,11 @@ package dev.kameshs.fruits.api;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 public class Fruit extends PanacheEntity {

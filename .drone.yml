@@ -3,7 +3,7 @@ type: docker
 name: default
 
 steps:
-- name: unit test
+- name: test
   image: kameshsampath/drone-java-maven-plugin:v1.0.3
   pull: if-not-exists
   settings:
@@ -12,8 +12,8 @@ steps:
     - -B 
     - clean 
     - test
-    - -q
-- name: package as jar
+
+- name: build
   image: kameshsampath/drone-java-maven-plugin:v1.0.3
   pull: if-not-exists
   settings:
@@ -23,9 +23,8 @@ steps:
     - clean 
     - install
     - -DskipTests
-    - -q
 
-- name: push image to registry
+- name: push
   image: thegeeklab/drone-docker-buildx
   privileged: true
   pull: if-not-exists
@@ -38,10 +37,6 @@ steps:
 services:
   - name: postgresql
     image: postgres:14.4-alpine
-    environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_USER: demo
-      POSTGRES_DB: fruitsdb
-
-
-      
+  # If you are using mysql/mariadb, uncomment this
+  # - name: mariadb
+  #   image: mariadb
