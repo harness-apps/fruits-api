@@ -52,7 +52,7 @@ public class FruitsTest {
         .body().as(Fruit[].class);
 
     Assertions.assertThat(fruits.length).isEqualTo(3);
-    System.out.println("ObjectId: " + fruits[0].id.toString());
+    //System.out.println("ObjectId: " + fruits[0].id.toString());
     Fruit fruit = RestAssured
         .given()
         .when()
@@ -96,7 +96,7 @@ public class FruitsTest {
     Assertions.assertThat(seasonalFruits[0].season).isEqualTo("summer");
 
     // Delete
-    System.out.println("Delete ObjectId: " + fruit.id.toString());
+    //System.out.println("Delete ObjectId: " + fruit.id.toString());
     RestAssured
         .given()
         .when()
