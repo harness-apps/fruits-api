@@ -30,17 +30,32 @@ Copy the `.env.example` to `.env` and update the following variables to suit you
 ## Build the Application
 
 ```shell
-drone exec --trusted --env-file=.env --secret-file=.secrets
+drone exec --trusted --env-file=.env
 ```
+
+>__TIP:__ If you are using nexus then enable the `maven_mirror_url` on the drone java maven plugin to point to maven mirror url
+> e.g. for a local nexus running your Docker for Desktop
+>
+> ```shell
+> drone exec --trusted --env-file=.env --network=<your nexus network>
+> ```
 
 The command will test, build and push the container image to the `$PLUGIN_REPO:$PLUGIN_TAG`.
 
 ## Run Application
 
+### Connecting to Local MongoDB
+
 ```shell
-docker run -p 8080:8080 \
-  --env "QUARKUS_MONGODB_CONNECTION_STRING=<your Atlas Connection URL>" \
-  "$PLUGIN_REPO:$PLUGIN_TAG"
+docker-compose up 
+```
+
+### Connecting to MongoDB Atlas
+
+Update the `QUARKUS_MONGODB_CONNECTION_STRING` in the .env file to point to your MongoDB Atlas and run,
+
+```shell
+docker-compose up fruits-api
 ```
 
 ## Trying API
